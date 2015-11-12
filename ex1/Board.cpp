@@ -1,26 +1,6 @@
-//#include the h file here - TODO:
-#include <iostream>
+#include "Board.h"
 #include <map>
 using namespace std;
-
-
-// class definition needs to move to an h file - TODO:
-class Board 
-{
-  const string ALLOWED_CHARS="SGRDHW";
-
-  private:
-    int _size;
-    char **_map;
-    string IDS();
-    string UCS();
-
-  public:
-    Board(int size, string mapAsSingleString);
-    ~Board();
-    string findPath(string algorithmName);
-    void print();
-};
 
 /**
  * A constructor - sets _size and constructs _map, which is a matrix representation
@@ -109,15 +89,3 @@ string Board::UCS()
   return "Blah blah!";
 }
 
-// will move to TestBoard.cpp file for self/unit tests - TODO:
-int main()
-{
-  cout << "creating and initializing the board" << endl;
-  Board board = Board(5,"SRWWWRRRDWRRRDWRRRDWDDRRG");
-  cout << "printing the board:" << endl;
-  board.print();
-  cout << "calling the IDS algorithm" << endl;
-  string res = board.findPath("IDS");
-  cout << "recieved the following result: " << res << endl;
-  return 1;
-}
