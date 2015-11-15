@@ -1,6 +1,4 @@
 #include "Board.h"
-#include <sstream>
-#include <assert.h>
 using namespace std;
 
 /**
@@ -13,17 +11,6 @@ using namespace std;
 Board::Board(int size, string mapAsSingleString) : _size(size)
 {
   cout << "in ctor:" << "size is " << _size << ", map string is: " << mapAsSingleString << endl;
-  // first do some sort of input validation here, then parse:
-  // input validation should check that:
-  // 1. _size is a natural number
-  // 2. mapAsSingleString length is divisable by _size
-  // 3. mapAsSingleString contains only valid characters 
-  // TODO: find out how to use regex in C++ pre 2011/14 or ask Ariel if C++11/14 can be used.
-  stringstream regexStr;
-  //  regexStr << "^([" << ALLOWED_CHARS << "]{" << _size << "}){" << _size << "}$";
-  regexStr << "^([" << ALLOWED_CHARS << "]+)";
-  cout << "DEBUG: regexStr is " << regexStr.str() << endl;
-  boost::regex validationRegex(regexStr.str().c_str());
   checkInput(mapAsSingleString);
   _map = new char*[_size];
   for (int i=0; i < _size; i++)
@@ -61,9 +48,9 @@ Board::~Board()
 
 /**
  * Will validate input and assert if it is not as expected.
- * Currently will test that _size is a natural positive number
- * and that the string map representation is legit, 
- * i.e. contains valid characters only and is divisable by _size squared.
+ * Currently will test that _size is a natural positive number,
+ * that the string map is of length _size^2 
+ * and that it doesn't contain illegal characters.
  *
  * @param mapAsSingleString - the string to validate 
  *                            (the member variable _size will be validated too, 
@@ -73,8 +60,8 @@ void Board::checkInput(string mapAsSingleString)
 {
   cout << "in checkInput" << endl;
   assert(_size > 0);
-  // this line doesn't work from some reason, TODO - low priority (not mandatory for the ex).
-  //assert(boost::regex_match(mapAsSingleString, validationRegex));
+  assert(mapAsSingleString.length() == _size*_size);
+  assert(mapAsSingleString.find_first_not_of("SGRDHW") == string::npos);
 }
 
 /**
