@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-I. -lboost_regex
+CFLAGS=-I.
 DEPS = Board.h
 FILES = Board.cpp
 OBJ = Board.o
