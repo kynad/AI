@@ -101,4 +101,3 @@ string Board::UCS()
   cout << "in UCS:" << endl;
   return "Blah blah!";
 }
-
