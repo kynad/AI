@@ -61,7 +61,7 @@ void Board::checkInput(string mapAsSingleString)
   cout << "in checkInput" << endl;
   assert(_size > 0);
   assert(mapAsSingleString.length() == _size*_size);
-  assert(mapAsSingleString.find_first_not_of("SGRDHW") == string::npos);
+  assert(mapAsSingleString.find_first_not_of(VALID_CHAR_SET) == string::npos);
 }
 
 /**

@@ -7,6 +7,8 @@
 #include <sstream>
 #include <assert.h>
 
+#define VALID_CHAR_SET "SGRDHW"
+
 class Board 
 {
 
