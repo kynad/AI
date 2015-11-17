@@ -65,4 +65,4 @@ string* service::input(std::string input_path){
     return(path);
 
 }; //will return the string, will initialize the algorithm
-//void service_class::output(std::string output_path, std::vector<string> output){}; //will write the data to the output file.
+

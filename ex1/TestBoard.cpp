@@ -4,13 +4,6 @@ using namespace std;
 
 int main()
 {
-  cout << "creating and initializing the board" << endl;
-  Board board = Board(5,"SRWWWRRRDWRRRDWRRRDWDDRRG");
-  cout << "printing the board:" << endl;
-  board.print();
-  cout << "calling the IDS algorithm" << endl;
-  string res = board.findPath("IDS");
-  cout << "recieved the following result: " << res << endl;
     string shai = "input.txt";
     service* shai1;
     shai1 = new service(shai);
@@ -21,7 +14,15 @@ int main()
 
     cout << "Hello world!" << endl;
     shai1->input("input.txt");
-    shai1->output("output.txt","shai the king \n\n\n\n shai the king 2q");
+
+    cout << "creating and initializing the board" << endl;
+    Board board = Board(5,shai1->path);
+    cout << "printing the board:" << endl;
+    board.print();
+    cout << "calling the " << shai1->algorithm << " algorithm" << endl;
+    string res = board.findPath(shai1->algorithm);
+    cout << "recieved the following result: " << res << endl << "compare that to output.txt" << endl;
+    shai1->output("output.txt",res);
     delete(shai1);
 
   return 0;
