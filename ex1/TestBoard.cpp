@@ -1,4 +1,5 @@
 #include "Board.h"
+#include "Service.h"
 using namespace std;
 
 int main()
@@ -10,5 +11,18 @@ int main()
   cout << "calling the IDS algorithm" << endl;
   string res = board.findPath("IDS");
   cout << "recieved the following result: " << res << endl;
-  return 1;
+    string shai = "input.txt";
+    service* shai1;
+    shai1 = new service(shai);
+    cell* shai5;
+    shai5 = new cell(4);
+    cout << "my cost is " << shai5->get_cost();
+    cout << "my adress is " << shai5->get_neighbor(5);
+
+    cout << "Hello world!" << endl;
+    shai1->input("input.txt");
+    shai1->output("output.txt","shai the king \n\n\n\n shai the king 2q");
+    delete(shai1);
+
+  return 0;
 }

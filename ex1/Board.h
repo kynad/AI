@@ -7,7 +7,6 @@
 #include <sstream>
 #include <assert.h>
 #include "Cell.h"
-#include <vector>
 
 #define VALID_CHAR_SET "SGRDHW"
 
