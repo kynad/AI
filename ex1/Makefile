@@ -1,23 +1,24 @@
-CC=g++
-CFLAGS=-I.
-DEPS = Board.h Cell.h Service.h
+CC = g++
+INC = -I.
+CFLAGS = -Wall -g $(INC)
 FILES = Board.cpp Cell.cpp Service.cpp
-OBJ = Board.o Cell.o Service.o
-TESTOBJ = TestBoard.o 
+OBJ = $(FILES:.cpp=.o)
+EXECUTABLE = a.out
+TESTOBJ = TestBoard.o
+TESTTARGET = test
 
-$%.o: %.cpp $(DEPS)
+
+all: $(OBJ)
+	$(CC) -o $(EXECUTABLE) $^ $(CFLAGS)
+
+$%.o: %.cpp %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-board: $(OBJ)
+$(TESTTARGET): $(OBJ) $(TESTOBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
-
-test: $(OBJ) $(TESTOBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
-
-zip:
-	zip ai_ex1 $(DEPS) $(FILES) Makefile 
-
-.PHONY: clean
 
 clean:
-	rm -f *.o *~ core board
+	$(RM) $(OBJ) $(TESTOBJ) $(EXECUTABLE) $(TESTTARGET) *~ core 
+
+zip: clean
+	zip ai_ex1 $(FILES) $(FILES:.cpp=.h) Makefile details.txt
