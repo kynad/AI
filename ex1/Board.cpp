@@ -1,6 +1,9 @@
 #include "Board.h"
 using namespace std;
 
+#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
+#define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
+
 /**
  * A constructor - sets _size and constructs _map, which is a matrix representation
  * of a map, where each cell is a character, with different meaning for each char.
@@ -12,6 +15,8 @@ Board::Board(int size, string mapAsSingleString) : _size(size)
 {
   cout << "in ctor:" << "size is " << _size << ", map string is: " << mapAsSingleString << endl;
   checkInput(mapAsSingleString);
+
+  // TODO: remove _map, it's not needed  
   _map = new char*[_size];
   for (int i=0; i < _size; i++)
   {
@@ -19,6 +24,17 @@ Board::Board(int size, string mapAsSingleString) : _size(size)
     for (int j = 0; j < _size; j++)
       _map[i][j] = mapAsSingleString.at((i * _size) + j);
   }
+
+  _graph = new cell*[_size*_size*sizeof(cell)];
+  for (int i=0; i < _size*_size; i++)
+    _graph[i] = new cell(costOf(mapAsSingleString.at(i)));
+  for (int i=0; i < _size; i++)
+    for (int j=0; j < _size; j++)
+      for (int k=MAX((i-1),0); k < MIN((i+2),_size); k++) 
+        for (int l=MAX((j-1),0); l < MIN((j+2),_size); l++)
+          _graph[i*_size + j]->set_neighbor((i-k+1)*3+(l-j+2), _graph[k*_size + l]);
+  for (int i=0; i < _size*_size; i++)
+    _graph[i]->clean_neighbors();
 }
 
 //This method is for self-testing purposes, should be removed before submission.
@@ -44,6 +60,31 @@ Board::~Board()
     delete [] _map[i];
   }
   delete [] _map;
+
+  delete [] _graph;
+}
+
+/**
+ *
+ */
+int Board::costOf(char terrain)
+{
+  switch(terrain)
+  {
+  case 'S':
+  case 'G':
+    return 0;
+  case 'R':
+    return 1;
+  case 'D':
+    return 3;
+  case 'H':
+    return 10;
+  case 'W':
+    return -1;
+  default:
+    throw "Unknown terrain";
+  }
 }
 
 /**
@@ -99,5 +140,6 @@ string Board::IDS()
 string Board::UCS()
 {
   cout << "in UCS:" << endl;
-  return "Blah blah!";
+  //  return "Blah blah!";
+
 }

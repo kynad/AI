@@ -1,8 +1,8 @@
 CC=g++
 CFLAGS=-I.
-DEPS = Board.h
-FILES = Board.cpp
-OBJ = Board.o
+DEPS = Board.h Cell.h
+FILES = Board.cpp Cell.cpp
+OBJ = Board.o Cell.o
 TESTOBJ = TestBoard.o 
 
 $%.o: %.cpp $(DEPS)
