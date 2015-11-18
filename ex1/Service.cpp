@@ -39,10 +39,13 @@ string* service::input(std::string input_path){
     {
         getline(fi,st);
         cout<<"first line is " <<st<<endl;
+        /**
         if  (st=="ids")
             algorithm = "ids";
         else
             algorithm = "dfs";
+        */
+        algorithm=st.substr(0,3);
 
 
         getline(fi,st); //gets the second line of file assuming it's the size
@@ -55,7 +58,6 @@ string* service::input(std::string input_path){
 
             st = st.substr(0,this->size);
             (*path).append(st);
-            fflush(stdout);
         }
     }
     else

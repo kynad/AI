@@ -10,7 +10,9 @@
 
 #define VALID_CHAR_SET "SGRDHW"
 
-class Board 
+using namespace std;
+
+class Board
 {
 
   private:
@@ -19,8 +21,10 @@ class Board
     cell **_graph;
     void checkInput(std::string mapAsSingleString);
     int costOf(char terrain);
-    std::string IDS();
+    std::string DFS(int,cell* where_the_f_am_i,int step,std::string s_string);
     std::string UCS();
+    std::string IDS();
+    std::string RDir(int); //new by the bean counter
 
   public:
     Board(int size, std::string mapAsSingleString);
