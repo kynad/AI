@@ -16,9 +16,10 @@ int main()
     shai1->input("input.txt");
 
     cout << "creating and initializing the board" << endl;
-    Board board = Board(5,shai1->path);
+    Board board = Board(shai1->size, shai1->path);
     cout << "printing the board:" << endl;
     board.print();
+    cout << board.start << ", " << board.goal << ":" << endl;
     cout << "calling the " << shai1->algorithm << " algorithm" << endl;
     string res = board.findPath(shai1->algorithm);
     cout << "recieved the following result: " << res << endl << "compare that to output.txt" << endl;

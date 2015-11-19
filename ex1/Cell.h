@@ -9,18 +9,19 @@
 
 class cell
 {
+  private:
+    cell* neighbors[9];
+    int cost;
+
 
   public:
   //    Cell* neighbors[NUM_NEIGHBORS];
-    cell* neighbors[9];
-    int cost;
 
     cell* get_neighbor(const int); //gets the direction
     int get_cost();
     cell(int cost);
     ~cell();
     void set_neighbor(int dir, cell* adress);
-    void clean_neighbors();
     void validateDirection(int direction);
 };
 

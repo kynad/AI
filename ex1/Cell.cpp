@@ -1,24 +1,6 @@
 #include "Cell.h"
 using namespace std;
 
-void cell::clean_neighbors(){
-    int i;
-    for(i=1;i<10;i++)
-    {
-        if(get_neighbor(i) != NULL && (get_neighbor(i))->get_cost() == -1)
-        {
-            this->set_neighbor(i,NULL);
-            if(!(i%2))
-            {
-                this->set_neighbor(i+1,NULL);
-                this->set_neighbor(i-1,NULL);
-            }
-
-        }
-    }
-}
-
-
 void cell::set_neighbor(int dir,cell* adress){ //takes the true natural visual direction and correct's it for the array.
     this->neighbors[dir-1] = adress;
 }
