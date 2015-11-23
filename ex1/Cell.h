@@ -1,27 +1,23 @@
-#ifndef CELL_H_INCLUDED
-#define CELL_H_INCLUDED
-#endif // CELL_H_INCLUDED
-
 #include <iostream>
 #include <assert.h>
 
 //#define NUM_NEIGHBORS 10
 
-class cell
+class Cell
 {
   private:
-    cell* neighbors[9];
+    Cell* neighbors[9];
     int cost;
 
 
   public:
   //    Cell* neighbors[NUM_NEIGHBORS];
 
-    cell* get_neighbor(const int); //gets the direction
+    Cell* get_neighbor(const int); //gets the direction
     int get_cost();
-    cell(int cost);
-    ~cell();
-    void set_neighbor(int dir, cell* adress);
+    Cell(int cost);
+    ~Cell();
+    void set_neighbor(int dir, Cell* adress);
     void validateDirection(int direction);
 };
 

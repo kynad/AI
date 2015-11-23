@@ -2,7 +2,7 @@ CC = g++
 INC = -I.
 CFLAGS = -Wall -g $(INC)
 
-FILES = Board.cpp Cell.cpp Service.cpp
+FILES = Definitions.cpp Path.cpp Cell.cpp Board.cpp Service.cpp
 OBJ = $(FILES:.cpp=.o)
 TARGET = a.out
 
