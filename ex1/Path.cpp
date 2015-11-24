@@ -27,7 +27,9 @@ PriorityPath::PriorityPath(PriorityPath parent,
  */
 PriorityPath::PriorityPath(Cell* startCell)
 {
-  priority = startCell->getCost();
+  priority = 0;
+  if (startCell)
+    priority = startCell->getCost();
   cells.push_back(startCell);
 }
 
@@ -97,4 +99,16 @@ bool PriorityPath::operator<(const PriorityPath& other) const
     if (rainbow[directions[i]] != rainbow[other.directions[i]])
       return rainbow[directions[i]] > rainbow[other.directions[i]];
   return false;
+}
+
+/**
+ * Checks if the given cell is already part of a path.
+ * 
+ * @param cell - the cell in question
+ *
+ * @return true if the given cell was found in cells, false otherwise. 
+ */
+bool PriorityPath::visited(Cell* cell)
+{
+  return find(cells.begin(), cells.end(), cell) != cells.end();
 }

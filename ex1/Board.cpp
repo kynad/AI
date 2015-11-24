@@ -92,12 +92,12 @@ PriorityPath Board::UCS()
       for (int i=Definitions::firstNeighbor(); i != Definitions::lastNeighbor(); i = Definitions::nextNeighbor(i))
       {
         Cell* child = (path.lastCell())->getNeighbor(i);
-        if (child != NULL && child != path.lastCell() && child != parent && child != start)
+        if (child != NULL && !path.visited(child))
           queue.push(PriorityPath(path, child, i));
       }
     parent = path.lastCell();
   }
-  return path;
+  return PriorityPath(NULL);
 }
 
 /**
@@ -115,7 +115,7 @@ PriorityPath Board::IDS()
     if (path.length() > 0)
       return path;
   }
-  return path;  
+  return PriorityPath(NULL);  
 }
 
 /**

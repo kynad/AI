@@ -114,17 +114,17 @@ int Definitions::prevNeighbor(int currentNeighbor)
  */
 void Definitions::cleanCellNeighbors(Cell *cell)
 {
-  int prev = prevNeighbor(lastNeighbor());
+  // 5 should always be NULL, it should not be used.
+  cell->setNeighbor(5, NULL);
   for(int i=firstNeighbor(); i != lastNeighbor(); i=nextNeighbor(i))
     if(cell->getNeighbor(i) != NULL && (cell->getNeighbor(i))->getCost() == costOf('W'))
     {
       cell->setNeighbor(i,NULL);
-      if(!(i%2))
+      if(i % 2 == 0)
       {
         cell->setNeighbor(nextNeighbor(i),NULL);
-        cell->setNeighbor(prev,NULL);
+        cell->setNeighbor(prevNeighbor(i),NULL);
       }
-      prev = i;
     }
 }
 

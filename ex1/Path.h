@@ -14,6 +14,7 @@
 //
 
 #include <vector>
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include "Cell.h"
@@ -35,6 +36,7 @@ class PriorityPath
     Cell* lastCell();
     Cell* lastParent();
     int length();
+    bool visited(Cell* cell); 
 
     bool operator<(const PriorityPath& other) const;
 };
