@@ -1,5 +1,7 @@
 /**
- * Description - TODO:
+ * The Board class is representing the map.
+ * It is composed of a list of pointers to cell objects that keep lists of neighbors
+ * And implements the IDS and the UCS algorithms on the resulted graph.
  */
 
 #include <stdio.h>
@@ -15,22 +17,21 @@
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 #endif
 
+#define MAX_DFS_DEPTH 18
 
 class Board
 {
   private:
     int _size;
-    char **_map;
-    cell **_graph;
+    Cell **_graph;
     PriorityPath DFS(PriorityPath path, int stepsCounter);
     PriorityPath UCS();
     PriorityPath IDS();
 
   public:
-    cell *start;
-    cell *goal;
+    Cell *start;
+    Cell *goal;
     int init(int size, std::string mapAsSingleString);
     ~Board();
     std::string findPath(std::string algorithmName);
-    void print();
 };

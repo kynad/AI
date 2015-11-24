@@ -1,23 +1,19 @@
 #include <iostream>
 #include <assert.h>
 
-//#define NUM_NEIGHBORS 10
+#define NUM_NEIGHBORS 10
 
 class Cell
 {
   private:
-    Cell* neighbors[9];
+    Cell* neighbors[NUM_NEIGHBORS];
     int cost;
 
-
   public:
-  //    Cell* neighbors[NUM_NEIGHBORS];
-
-    Cell* get_neighbor(const int); //gets the direction
-    int get_cost();
+    Cell* getNeighbor(int);
+    int getCost();
     Cell(int cost);
-    ~Cell();
-    void set_neighbor(int dir, Cell* adress);
+    void setNeighbor(int dir, Cell* adress);
     void validateDirection(int direction);
 };
 

@@ -5,7 +5,7 @@ using namespace std;
  * An initializer - sets _size and constructs _map, which is a matrix representation
  * of a map, where each cell is a character, with different meaning for each char.
  *
- * @param size - the size of the map given.
+ * @param size              - the size of the map given.
  * @param mapAsSingleString - the map as one long string, without any delimeters.
  */
 int Board::init(int size, string mapAsSingleString)
@@ -14,9 +14,9 @@ int Board::init(int size, string mapAsSingleString)
 
   _size = size;
   
-  _graph = new cell*[_size*_size*sizeof(cell)];
+  _graph = new Cell*[_size*_size*sizeof(Cell)];
   for (int i=0; i < _size*_size; i++)
-    _graph[i] = new cell(Definitions::costOf(mapAsSingleString.at(i)));
+    _graph[i] = new Cell(Definitions::costOf(mapAsSingleString.at(i)));
 
   start = _graph[0];
   goal = _graph[_size*_size - 1];
@@ -36,7 +36,7 @@ int Board::init(int size, string mapAsSingleString)
     for (int j=0; j < _size; j++)
       for (int k=MAX((i-1),0); k < MIN((i+2),_size); k++)
         for (int l=MAX((j-1),0); l < MIN((j+2),_size); l++)
-            _graph[i*_size + j]->set_neighbor((i-k+1)*3+(l-j+2), _graph[k*_size + l]);
+            _graph[i*_size + j]->setNeighbor((i-k+1)*3+(l-j+2), _graph[k*_size + l]);
 
   // finally, we instruct all cells to clean up.
   for (int i=0; i < _size*_size; i++)
@@ -56,7 +56,7 @@ Board::~Board()
  *
  * @param algorithmName - a selector of the algorithm to be used.
  *
- * @return the string representation of a path, each char means one of Down,Up,Left,Right.
+ * @return the string representation of a path (see more info in the ex definition).
  */
 string Board::findPath(string algorithmName)
 {
@@ -72,14 +72,15 @@ string Board::findPath(string algorithmName)
 }
 
 /**
- * An implementation of the UCS algorithm applied to _map
- * @return the string representation of a path, each char means one of Down,Up,Left,Right.
+ * An implementation of the UCS algorithm applied to _graph
+ *
+ * @return PriorityPath object that contains info about the nodes of the path and it's total cost.
  */
 PriorityPath Board::UCS()
 {
   priority_queue<PriorityPath> queue;
   PriorityPath path = PriorityPath(start);
-  cell* parent = start;
+  Cell* parent = start;
   queue.push(path);
   while (!queue.empty())
   {
@@ -90,7 +91,7 @@ PriorityPath Board::UCS()
     else
       for (int i=Definitions::firstNeighbor(); i != Definitions::lastNeighbor(); i = Definitions::nextNeighbor(i))
       {
-        cell* child = (path.lastCell())->get_neighbor(i);
+        Cell* child = (path.lastCell())->getNeighbor(i);
         if (child != NULL && child != path.lastCell() && child != parent && child != start)
           queue.push(PriorityPath(path, child, i));
       }
@@ -100,28 +101,36 @@ PriorityPath Board::UCS()
 }
 
 /**
- * An implementation of the IDS algorithm applied to _map
- * @return the string representation of a path, each char means one of Down,Up,Left,Right.
+ * An implementation of the IDS algorithm applied to _graph
+ *
+ * @return PriorityPath object that contains info about the nodes of the path and it's total cost.
  */
 PriorityPath Board::IDS()
 {
   PriorityPath path;
 
-  //TODO: fix th ehard-coded limit here.
-  for(int k = 0; k < 18; k++)
+  for(int level = 0; level < MAX_DFS_DEPTH; level++)
   {
-    path = DFS(PriorityPath(start),k);
-    cout << "try " << k << " ";
+    path = DFS(PriorityPath(start), level);
     if (path.length() > 0)
       return path;
   }
   return path;  
 }
 
-
+/**
+ * An implementation of the DFS with a max depth limit as required for the IDS algorithm.
+ *
+ * This is a recursive function that counts the number of nested calls.
+ * 
+ * @param path         - the accumulated path that is keeping the result.
+ * @param stepsCounter - the depth limitation.
+ *
+ * @return PriorityPath object that contains info about the nodes of the path and it's total cost.
+ */
 PriorityPath Board::DFS(PriorityPath path, int stepsCounter)
 {
-  cell* currentCell = path.lastCell();
+  Cell* currentCell = path.lastCell();
   if (currentCell == goal)
     return path;
   if (stepsCounter >= 0)
@@ -129,7 +138,7 @@ PriorityPath Board::DFS(PriorityPath path, int stepsCounter)
         cur_dir != Definitions::lastNeighbor(); 
         cur_dir=Definitions::nextNeighbor(cur_dir))
     {
-      cell* child = currentCell->get_neighbor(cur_dir);
+      Cell* child = currentCell->getNeighbor(cur_dir);
       if((child != NULL) && (child != currentCell) && (child != path.lastParent()))
       {
         PriorityPath currentPath = DFS(PriorityPath(path, child, cur_dir),stepsCounter-1);

@@ -57,18 +57,24 @@ int Definitions::costOf(char terrain)
  *
  * @return THe abbrevation of this direction, e.g. Right-Down --> "RD"
  */
-string Definitions::RDir(int dir)
+string Definitions::convertDirection(int dir)
 {
   assert(dir > 0 && dir < 10);
   string directions[11] = {"", "LD", "D", "RD", "L", "", "R", "UL", "U", "UR"};
   return directions[dir];
 }
 
+/**
+ * @return the first neighbor by the order that was defined in the ex.
+ */
 int Definitions::firstNeighbor()
 {
   return 6;
 }
 
+/**
+ * @return the next neighbor by the order that was defined in the ex.
+ */
 int Definitions::nextNeighbor(int currentNeighbor)
 {
   assert(currentNeighbor > 0 && currentNeighbor < 10);
@@ -77,22 +83,46 @@ int Definitions::nextNeighbor(int currentNeighbor)
   return nextNeighbor[currentNeighbor];
 }
 
+/**
+ * returns -1 to signal that no more neighbors left to process.
+ * basically, all 4 functions were supposed to replace a full iterator.
+ */
 int Definitions::lastNeighbor()
 {
   return -1;
 }
 
-void Definitions::cleanCellNeighbors(cell *Cell)
+/**
+ * @return the previous neighbor by the order that was defined in the ex.
+ */
+int Definitions::prevNeighbor(int currentNeighbor)
 {
-  int prev = lastNeighbor();
+  if (currentNeighbor == -1)
+    return 9;
+  assert(currentNeighbor > 0 && currentNeighbor < 10);
+  // TODO: optimize the shit out of this
+  int prevNeighbor[10] = {-1,2,3,6,1,-1,9,4,7,8};
+  return prevNeighbor[currentNeighbor];
+}
+
+/**
+ * Detaching the neighbors of the given cell, if their terrain is water.
+ * In addition, as required, will detach adjacent diagonal neighbors,
+ * if the non-diagonal neighbor is water.
+ *
+ * @param cell - the cell that needs to be cleaned up.
+ */
+void Definitions::cleanCellNeighbors(Cell *cell)
+{
+  int prev = prevNeighbor(lastNeighbor());
   for(int i=firstNeighbor(); i != lastNeighbor(); i=nextNeighbor(i))
-    if(Cell->get_neighbor(i) != NULL && (Cell->get_neighbor(i))->get_cost() == costOf('W'))
+    if(cell->getNeighbor(i) != NULL && (cell->getNeighbor(i))->getCost() == costOf('W'))
     {
-      Cell->set_neighbor(i,NULL);
+      cell->setNeighbor(i,NULL);
       if(!(i%2))
       {
-        Cell->set_neighbor(nextNeighbor(i),NULL);
-        Cell->set_neighbor(prev,NULL);
+        cell->setNeighbor(nextNeighbor(i),NULL);
+        cell->setNeighbor(prev,NULL);
       }
       prev = i;
     }
@@ -113,9 +143,9 @@ string Definitions::convertPath(PriorityPath path)
 
   ostringstream stream;
   vector<int>::const_iterator memcell=(path.directions).begin();
-  stream << RDir(*memcell);
+  stream << convertDirection(*memcell);
   for (memcell++; memcell != (path.directions).end(); memcell++)
-    stream << "-" << RDir(*memcell);
+    stream << "-" << convertDirection(*memcell);
   stream << " " << path.priority;
 
   return stream.str();

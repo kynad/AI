@@ -2,25 +2,19 @@ CC = g++
 INC = -I.
 CFLAGS = -Wall -g $(INC)
 
-FILES = Definitions.cpp Path.cpp Cell.cpp Board.cpp Service.cpp
+FILES = Definitions.cpp Path.cpp Cell.cpp Board.cpp
+MAIN = AIEx1.cpp
 OBJ = $(FILES:.cpp=.o)
 TARGET = a.out
 
-TESTOBJ = TestBoard.o
-TESTTARGET = test
-
-
 all: $(OBJ)
-	$(CC) -o $(TARGET) $^ $(CFLAGS)
+	$(CC) -o $(TARGET) $^ $(MAIN) $(CFLAGS)
 
 $%.o: %.cpp %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-$(TESTTARGET): $(OBJ) $(TESTOBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
-
 clean:
-	$(RM) $(OBJ) $(TESTOBJ) $(TARGET) $(TESTTARGET) *~ core 
+	$(RM) $(OBJ) $(TARGET) *~ core 
 
 zip: clean
-	zip ai_ex1 $(FILES) $(FILES:.cpp=.h) Makefile details.txt
+	zip ai_ex1 $(FILES) $(FILES:.cpp=.h) $(MAIN) Makefile details.txt
