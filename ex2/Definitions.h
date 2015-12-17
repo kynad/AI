@@ -27,4 +27,8 @@ public:
   static int prevNeighbor(int currentNeighbor);
   static void cleanCellNeighbors(Cell * cell);
   static std::string convertPath(PriorityPath path);
+  static bool isDiagonal(int direction);
+  static double probability(Cell* current, Cell* next, int actual, int action);
+  static double discountFactor() {return 1.0;}
+  static int reward(Cell* current, Cell* next);
 };

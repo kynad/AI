@@ -82,8 +82,10 @@ string Board::findPath(string algorithmName)
  */
 string Board::findPolicy(string algorithmName)
 {
-  //
   return "blah";
+  // need to find the preferred direction for all cell
+  // starting start, recursively call the function for all neighbors (ordered by direction)
+  // get the return value from each and 
 }
 
 /**

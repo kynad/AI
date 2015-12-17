@@ -120,7 +120,7 @@ void Definitions::cleanCellNeighbors(Cell *cell)
     if(cell->getNeighbor(i) != NULL && (cell->getNeighbor(i))->getCost() == costOf('W'))
     {
       cell->setNeighbor(i,NULL);
-      if(i % 2 == 0)
+      if(!isDiagonal(i))
       {
         cell->setNeighbor(nextNeighbor(i),NULL);
         cell->setNeighbor(prevNeighbor(i),NULL);
@@ -149,4 +149,52 @@ string Definitions::convertPath(PriorityPath path)
   stream << " " << path.priority;
 
   return stream.str();
+}
+
+/**
+ * @return true if the direction is diagonal and false otherwise
+ */
+bool Definitions::isDiagonal(int direction)
+{
+  return (bool)(direction % 2);
+}
+
+/**
+ * Calculates the probability to get from one cell to another with the chosen direction.
+ * Basically, answers the question: what is the probability that if I move from one cell
+ * in a given direction (which is my action), I will get to the cell I want to get to.
+ *
+ * @param current - the cell to move from (current state)
+ * @param next    - the cell to move to (desired state)
+ * @param actual - the actual direction which connects current to next (should be -1 if they aren't connected)
+ * @param action - the direction we query about 
+ */
+double Definitions::probability(Cell* current, Cell* next, int actual, int action)
+{
+  if (actual == -1)
+    return 0.0;
+  if (isDiagonal(action))
+  {
+    if (actual == prevNeighbor(action) || action == prevNeighbor(actual))
+      return 0.15;
+    else if (actual == action)
+      return 0.7;
+  }
+  else if (actual == action)
+    return 1.0;
+  return 0.0;
+}
+
+/**
+ * Finds the reward for transition from one cell to another.
+ * Since this only depends on the target cell (assuming it is reachable), we ignore the current cell.
+ *
+ * @param current - the cell we are at
+ * @param next    - the cell we want to go to
+ *
+ * @return the expected reward for the transition, which is the cost of the next cell.
+ */
+int Definitions::reward(Cell* current, Cell* next)
+{
+  return next->cost;
 }
