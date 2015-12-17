@@ -196,5 +196,5 @@ double Definitions::probability(Cell* current, Cell* next, int actual, int actio
  */
 int Definitions::reward(Cell* current, Cell* next)
 {
-  return next->cost;
+  return next->getCost();
 }
