@@ -13,6 +13,7 @@
 #include "Path.h"
 
 #define VALID_CHAR_SET "SGRDHW"
+#define MAX_COST 11
 
 
 class Definitions
@@ -30,5 +31,5 @@ public:
   static bool isDiagonal(int direction);
   static double probability(Cell* current, Cell* next, int actual, int action);
   static double discountFactor() {return 1.0;}
-  static int reward(Cell* current, Cell* next);
+  static int reward(Cell* cell);
 };

@@ -9,7 +9,7 @@
 #include <sstream>
 #include <assert.h>
 #include <queue>
-#include "Policy.h"
+#include "Definitions.h"
 
 
 #ifndef MIN_MAX
@@ -27,7 +27,7 @@ class Board
     PriorityPath DFS(PriorityPath path, int stepsCounter);
     PriorityPath UCS();
     PriorityPath IDS();
-    Policy ValueIteration();
+    std::vector< std::vector<double> > ValueIteration();
 
   public:
     Cell *start;

@@ -186,15 +186,13 @@ double Definitions::probability(Cell* current, Cell* next, int actual, int actio
 }
 
 /**
- * Finds the reward for transition from one cell to another.
- * Since this only depends on the target cell (assuming it is reachable), we ignore the current cell.
- *
- * @param current - the cell we are at
- * @param next    - the cell we want to go to
- *
- * @return the expected reward for the transition, which is the cost of the next cell.
+ * @return the expected reward for going through the given cell 
+ * the reward is derrived from the cell's cost (except goal, that gets a 100).
  */
-int Definitions::reward(Cell* current, Cell* next)
+int Definitions::reward(Cell* cell)
 {
-  return next->getCost();
+  int cost = cell->getCost();
+  if (cost == 0)
+    return 100;
+  return (MAX_COST - cost);
 }

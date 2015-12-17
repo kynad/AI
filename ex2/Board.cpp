@@ -165,3 +165,9 @@ PriorityPath Board::DFS(PriorityPath path, int stepsCounter)
     }
   return PriorityPath(NULL);
 }
+
+vector< vector<double> > Board::ValueIteration()
+{
+  vector< vector <double> > policy;
+  return policy;
+}
