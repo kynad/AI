@@ -20,6 +20,14 @@ void Definitions::checkInput(int size, string mapAsSingleString)
 }
 
 /**
+ * Just an input validator, shouldn't ever be needed after a working solution phase.
+ */
+void Definitions::validateNeighbor(int neighbor)
+{
+  assert(neighbor > 0 && neighbor < 10);
+}
+
+/**
  * Converts character terrain representation to graph edge weight (int).
  * 
  * @param terrain - the char that represents this terrain. Can be one of: {S,G,R,D,H,W}
@@ -59,7 +67,7 @@ int Definitions::costOf(char terrain)
  */
 string Definitions::convertDirection(int dir)
 {
-  assert(dir > 0 && dir < 10);
+  validateNeighbor(dir);
   string directions[11] = {"", "LD", "D", "RD", "L", "", "R", "UL", "U", "UR"};
   return directions[dir];
 }
@@ -77,7 +85,7 @@ int Definitions::firstNeighbor()
  */
 int Definitions::nextNeighbor(int currentNeighbor)
 {
-  assert(currentNeighbor > 0 && currentNeighbor < 10);
+  validateNeighbor(currentNeighbor);
   // TODO: optimize the shit out of this
   int nextNeighbor[10] = {-1,4,1,2,7,-1,3,8,9,-1};
   return nextNeighbor[currentNeighbor];
@@ -99,7 +107,7 @@ int Definitions::prevNeighbor(int currentNeighbor)
 {
   if (currentNeighbor == -1)
     return 9;
-  assert(currentNeighbor > 0 && currentNeighbor < 10);
+  validateNeighbor(currentNeighbor);
   // TODO: optimize the shit out of this
   int prevNeighbor[10] = {-1,2,3,6,1,-1,9,4,7,8};
   return prevNeighbor[currentNeighbor];
@@ -186,18 +194,24 @@ double Definitions::probability(Cell* current, Cell* next, int actual, int actio
 }
 
 /**
- * @return the expected reward for going through the given cell 
- * the reward is derrived from the cell's cost (except goal, that gets a 100) and scaled.
+ * Calculates the expected reward for going through the given cell.
+ * The reward equals to -1*cost and is scaled to be between -1 and 0.
+ * The only exception (as required in the ex defintions) is goal which gets reward +1.
+ *
+ * @param cell - the cell we want to find a reward for.
+ *
+ * @return the reward for the given cell.
  */
 double Definitions::reward(Cell* cell)
 {
   if (isWater(cell))
     return -MAX_REWARD;
+
   double cost = (double)cell->getCost();
-  // converting goal's cost to -MAX_REWARD, so that its reward would get converted to +1.0
+  // converting goal's and starts costs to fit our needs.
   if (cost == 0.0)
     cost = MAX_REWARD * ((cell->getId() == 0) ? 1 : -1);
-  // return cost between -1.0 and 0 for all terrains, except G.
+
   return (0.0 - (cost / MAX_REWARD));
 }
 
@@ -218,19 +232,30 @@ bool Definitions::isWater(Cell* cell)
  */
 string Definitions::convertPolicy(vector<int> policy, int size)
 {
-  ostringstream stream;
+  // will be used to avoid introducing '\n' in the last line.
+  // which is needed to have output consistent with the school solution.
+  string eol="";
+
+  stringstream stream;
   for (int i = 0; i < size; i++)
     for (int j = 0; j < size; j++)
     {
       int direction = policy[i*size+j];
       if (direction > -1)
-        stream << i << "," << j << "," << convertDirection(direction) << endl;
+        stream << eol << i << "," << j << "," << convertDirection(direction);
+      eol = '\n';
     }
+
   return stream.str();
 }
 
 /**
  * Determines whether two utilities are "close" to each other.
+ *
+ * @param first  - one of the utility vectors
+ * @param second - the other utility vector
+ *
+ * @return true if their RMS function (eucledian distance divided by dimension) is smaller than EPSILON and false otherwise.
  */
 bool Definitions::closeEnough(vector<double> first, vector<double> second)
 {

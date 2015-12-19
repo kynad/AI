@@ -46,12 +46,12 @@ input readAndParseInput(const char* inputPath, bool skipFirstLine=false)
   {
     if (!skipFirstLine)
     {
-      // in ex1 the first line held the name of the algorithm to use
+      // in ex1 the first line holds the name of the algorithm to use
       getline(input, line);
       parsedRes.algorithm = line.substr(0,3);
     }
     else
-      parsedRes.algorithm = "";
+      parsedRes.algorithm = "Value Iteration";
     
     // get the board size
     getline(input, line); 

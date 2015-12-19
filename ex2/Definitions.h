@@ -37,4 +37,5 @@ public:
   static bool isWater(Cell* cell);
   static std::string convertPolicy(std::vector<int> policy, int size);
   static bool closeEnough(std::vector<double> first, std::vector<double> second);
+  static void validateNeighbor(int neighbor);
 };

@@ -13,8 +13,8 @@ class Cell
     Cell* getNeighbor(int);
     int getCost();
     Cell(int cost, int id);
+    void validateNeighbor(int neighbor);
     void setNeighbor(int dir, Cell* adress);
-    void validateDirection(int direction);
     int getId();
 };
 

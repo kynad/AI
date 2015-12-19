@@ -15,15 +15,11 @@ Cell::Cell(int cost, int id) : cost(cost), id(id)
 }
 
 /**
- * Input validation to avoid segfaults. Not really needed.
- *
- * @param direction - An integer that translates to direction.
- *                    The translation from int to an actual direction
- *                    is defined in the Definitions class.
+ * Just an input validator, shouldn't ever be needed after a working solution phase.
  */
-void Cell::validateDirection(int direction)
+void Cell::validateNeighbor(int neighbor)
 {
-  assert(direction > 0 && direction < NUM_NEIGHBORS);
+  assert(neighbor > 0 && neighbor < 10);
 }
 
 /**
@@ -34,7 +30,7 @@ void Cell::validateDirection(int direction)
  */
 void Cell::setNeighbor(int direction, Cell* adress)
 {
-  validateDirection(direction);
+  validateNeighbor(direction);
   neighbors[direction-1] = adress;
 }
 
@@ -53,7 +49,7 @@ int Cell::getCost()
  */
 Cell* Cell::getNeighbor(int direction)
 {
-  validateDirection(direction);
+  validateNeighbor(direction);
   return neighbors[direction-1];
 }
 

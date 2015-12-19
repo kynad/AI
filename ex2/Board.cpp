@@ -62,7 +62,8 @@ Board::~Board()
 string Board::findPath(string algorithmName)
 {
   PriorityPath path;
-  // TODO: this idiotic language can't switch on strings.c++11 or c++14 can - make sure they can be used.
+  // TODO: this idiotic language can't switch on strings.
+  //       c++11 or c++14 can - make sure they can be used.
   // P.S. They can't.
   if (algorithmName=="IDS")
     path = IDS();
@@ -172,21 +173,6 @@ PriorityPath Board::DFS(PriorityPath path, int stepsCounter)
   return PriorityPath(NULL);
 }
 
-////////////// REMOVE printing functions ////////////////
-void Board::printVector(vector<double> vec)
-{
-  for (int i = 0; i < _size; i++)
-    for (int j = 0; j < _size; j++)
-      cout << vec[i*_size+j] << ((_size - j > 1) ? " " : "\n");
-}
-void Board::printVector(vector<int> vec)
-{
-  for (int i = 0; i < _size; i++)
-    for (int j = 0; j < _size; j++)
-      cout << vec[i*_size+j] << ((_size - j > 1) ? " " : "\n");
-}
-///////////////////////////////////////////////////////
-
 
 /**
  * Implementation of the Value Iteration algorithm.
@@ -223,7 +209,13 @@ vector<int> Board::ValueIteration()
 }
 
 /**
- * Returns the Sum(Probability(move from current cell to it's neighbor, using action)*value)
+ * Finds teh expectancy of a given state (cell) and a given action (direction).
+ *
+ * @param current - the cell to get the expectancy for.
+ * @param action  - the action to get the expectancy for.
+ * @param utility - a vector of values for evry state to be used in the equation below.
+ *
+ * @return Sum{Prob(state,action,nextState)*utility(state)}
  */
 double Board::expectancy(Cell* current, int action, vector<double> utility)
 {
@@ -244,7 +236,14 @@ double Board::expectancy(Cell* current, int action, vector<double> utility)
 }
 
 /**
+ * Executes the Board::expectancy() function for the given state (cell)
+ * and every possible action for that state and returns the maximum of these values.
  *
+ * @param current - the cell to get the max value for.
+ * @prarm utility - used by Board::expectancy() to get the values for each vertex.
+ * @param argMax  - pointer to get the argmax of the above, i.e. the state that maximized expectancy.
+ *
+ * @return max(expectancy(state,action))
  */
 double Board::maxExpectancy(Cell* current, vector<double> utility, int* argMax)
 {
