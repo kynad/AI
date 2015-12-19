@@ -1,6 +1,7 @@
 #include "Board.h"
 using namespace std;
 
+
 /**
  * An initializer - sets _size and constructs _map, which is a matrix representation
  * of a map, where each cell is a character, with different meaning for each char.
@@ -16,7 +17,7 @@ int Board::init(int size, string mapAsSingleString)
   
   _graph = new Cell*[_size*_size*sizeof(Cell)];
   for (int i=0; i < _size*_size; i++)
-    _graph[i] = new Cell(Definitions::costOf(mapAsSingleString.at(i)));
+    _graph[i] = new Cell(Definitions::costOf(mapAsSingleString.at(i)), i);
 
   start = _graph[0];
   goal = _graph[_size*_size - 1];
@@ -82,11 +83,16 @@ string Board::findPath(string algorithmName)
  */
 string Board::findPolicy(string algorithmName)
 {
-  return "blah";
-  // need to find the preferred direction for all cell
-  // starting start, recursively call the function for all neighbors (ordered by direction)
-  // get the return value from each and 
+  vector<int> policy;
+
+  if (algorithmName=="Value Iteration")
+    policy = ValueIteration();
+  else
+    throw "Wrong algorithm. Currently only Value Iteration is supported";
+
+  return Definitions::convertPolicy(policy, _size);
 }
+
 
 /**
  * An implementation of the UCS algorithm applied to _graph
@@ -166,8 +172,116 @@ PriorityPath Board::DFS(PriorityPath path, int stepsCounter)
   return PriorityPath(NULL);
 }
 
-vector< vector<double> > Board::ValueIteration()
+////////////// REMOVE printing functions ////////////////
+void Board::printVector(vector<double> vec)
 {
-  vector< vector <double> > policy;
+  for (int i = 0; i < _size; i++)
+    for (int j = 0; j < _size; j++)
+      cout << vec[i*_size+j] << ((_size - j > 1) ? " " : "\n");
+}
+void Board::printVector(vector<int> vec)
+{
+  for (int i = 0; i < _size; i++)
+    for (int j = 0; j < _size; j++)
+      cout << vec[i*_size+j] << ((_size - j > 1) ? " " : "\n");
+}
+///////////////////////////////////////////////////////
+
+
+/**
+ * Implementation of the Value Iteration algorithm.
+ * Iterates over every neighbor of each vertex in _graph and finds the one
+ * that maximizes that vertex Bellman equation.
+ * Ends when the rewards begins to converge 
+ * (i.e. the difference between each step becomes neglible)
+ * 
+ * @return the policy (best direction to go to for each vertex) as vector<int>
+ */
+vector<int> Board::ValueIteration()
+{
+  vector<double> utilityTag;
+  for (int i = 0; i < _size*_size; i++)
+    utilityTag.push_back(Definitions::reward(_graph[i]));
+
+  vector<double> utility(utilityTag.size(), 0);
+  int counter=0;
+  do
+  {
+    utility = utilityTag;
+    for (int i = 0; i < _size*_size - 1; i++)
+    {
+      if (Definitions::isWater(_graph[i]))
+        continue;
+      int argMax; // Not going to use that here, ignore.
+      double max = maxExpectancy(_graph[i], utility, &argMax);
+      utilityTag[i] = Definitions::reward(_graph[i]) + Definitions::discountFactor()*max;
+    }
+
+  } while (!Definitions::closeEnough(utility,utilityTag) && (counter++ < _size*_size));
+
+  return calculatePolicy(utility);
+}
+
+/**
+ * Returns the Sum(Probability(move from current cell to it's neighbor, using action)*value)
+ */
+double Board::expectancy(Cell* current, int action, vector<double> utility)
+{
+  double expectancy = 0.0;
+  for(int dir  = Definitions::firstNeighbor(); 
+      dir != Definitions::lastNeighbor(); 
+      dir  = Definitions::nextNeighbor(dir))
+  {
+    Cell* neighbor = current->getNeighbor(dir);
+    if (neighbor != NULL)
+    {
+      double oldValue = utility[neighbor->getId()];
+      double prob = Definitions::probability(current, neighbor, dir, action);
+      expectancy += prob * oldValue;
+    }
+  }
+  return expectancy;
+}
+
+/**
+ *
+ */
+double Board::maxExpectancy(Cell* current, vector<double> utility, int* argMax)
+{
+  double maxExpectancy = -MAX_REWARD;
+  for(int action  = Definitions::firstNeighbor(); 
+      action != Definitions::lastNeighbor(); 
+      action  = Definitions::nextNeighbor(action))
+  {
+    double tempExp = expectancy(current, action, utility);
+    if (tempExp != 0 && tempExp > maxExpectancy)
+    {
+      maxExpectancy = tempExp;
+      *argMax = action;
+    }
+  }
+  return maxExpectancy;
+}
+
+/**
+ * Calculates the policy from the vertex values.
+ *
+ * @param utility - a vector of doubles that provides the value for every vertex
+ *
+ * @returns the policy - a list of directions to the highest-value neighbor for each vertex.
+ */
+vector<int> Board::calculatePolicy(vector<double> utility)
+{
+  vector<int> policy(_size*_size, -1);
+
+  for (int i = 0; i < _size*_size-1; i++)
+  {
+    if (Definitions::isWater(_graph[i]))
+      continue;
+
+    int argMax;
+    double maxExp = maxExpectancy(_graph[i], utility, &argMax);
+    policy[i] = argMax;
+  }
   return policy;
 }

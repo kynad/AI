@@ -3,11 +3,12 @@ using namespace std;
 
 /**
  * Constructor of the Cell class
- * Sets the cost and inits the neighbors array.
+ * Sets the cost and an id and inits the neighbors array.
  *
  * @param cost - the cost of this cell (see ex definitions for more details)
+ * @param id - the id of this cell (because it's an adult cell and deserves an id)
  */
-Cell::Cell(int cost) : cost(cost)
+Cell::Cell(int cost, int id) : cost(cost), id(id)
 {
   for(int i = 1; i < NUM_NEIGHBORS; i++)
     setNeighbor(i, NULL);
@@ -54,4 +55,12 @@ Cell* Cell::getNeighbor(int direction)
 {
   validateDirection(direction);
   return neighbors[direction-1];
+}
+
+/**
+ * @return that cell's id
+ */
+int Cell::getId()
+{
+  return id;
 }

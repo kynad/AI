@@ -27,7 +27,13 @@ class Board
     PriorityPath DFS(PriorityPath path, int stepsCounter);
     PriorityPath UCS();
     PriorityPath IDS();
-    std::vector< std::vector<double> > ValueIteration();
+    std::vector<int> ValueIteration();
+    std::vector<int> calculatePolicy(std::vector<double> utility);
+    double expectancy(Cell* current, int action, std::vector<double> utility);
+    double maxExpectancy(Cell* current, std::vector<double> utility, int* argMax);
+    //debug
+    void printVector(std::vector<double> vec);
+    void printVector(std::vector<int> vec);
 
   public:
     Cell *start;

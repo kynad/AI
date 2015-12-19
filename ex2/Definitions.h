@@ -8,12 +8,14 @@
 //
 
 #include <stdio.h>
+#include <cmath>
 #include <iostream>
 #include <sstream>
 #include "Path.h"
 
 #define VALID_CHAR_SET "SGRDHW"
-#define MAX_COST 11
+#define MAX_REWARD 100.0
+#define EPSILON 0.000001
 
 
 class Definitions
@@ -31,5 +33,8 @@ public:
   static bool isDiagonal(int direction);
   static double probability(Cell* current, Cell* next, int actual, int action);
   static double discountFactor() {return 1.0;}
-  static int reward(Cell* cell);
+  static double reward(Cell* cell);
+  static bool isWater(Cell* cell);
+  static std::string convertPolicy(std::vector<int> policy, int size);
+  static bool closeEnough(std::vector<double> first, std::vector<double> second);
 };

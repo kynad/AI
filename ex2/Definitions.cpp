@@ -171,7 +171,7 @@ bool Definitions::isDiagonal(int direction)
  */
 double Definitions::probability(Cell* current, Cell* next, int actual, int action)
 {
-  if (actual == -1)
+  if (actual == -1 || current->getNeighbor(action) == NULL)
     return 0.0;
   if (isDiagonal(action))
   {
@@ -187,12 +187,58 @@ double Definitions::probability(Cell* current, Cell* next, int actual, int actio
 
 /**
  * @return the expected reward for going through the given cell 
- * the reward is derrived from the cell's cost (except goal, that gets a 100).
+ * the reward is derrived from the cell's cost (except goal, that gets a 100) and scaled.
  */
-int Definitions::reward(Cell* cell)
+double Definitions::reward(Cell* cell)
 {
-  int cost = cell->getCost();
-  if (cost == 0)
-    return 100;
-  return (MAX_COST - cost);
+  if (isWater(cell))
+    return -MAX_REWARD;
+  double cost = (double)cell->getCost();
+  // converting goal's cost to -MAX_REWARD, so that its reward would get converted to +1.0
+  if (cost == 0.0)
+    cost = MAX_REWARD * ((cell->getId() == 0) ? 1 : -1);
+  // return cost between -1.0 and 0 for all terrains, except G.
+  return (0.0 - (cost / MAX_REWARD));
+}
+
+/**
+ * @return true if the given cell is water and false otherwise
+ */
+bool Definitions::isWater(Cell* cell)
+{
+  return cell->getCost() == costOf('W');
+}
+
+/**
+ * Converts a policy to a string representation defined in the ex.
+ *
+ * @param policy - a vecotr<int> that tells where to go for every cell.
+ * 
+ * @return the string representation of the policy.
+ */
+string Definitions::convertPolicy(vector<int> policy, int size)
+{
+  ostringstream stream;
+  for (int i = 0; i < size; i++)
+    for (int j = 0; j < size; j++)
+    {
+      int direction = policy[i*size+j];
+      if (direction > -1)
+        stream << i << "," << j << "," << convertDirection(direction) << endl;
+    }
+  return stream.str();
+}
+
+/**
+ * Determines whether two utilities are "close" to each other.
+ */
+bool Definitions::closeEnough(vector<double> first, vector<double> second)
+{
+  assert(first.size() == second.size());
+  
+  double RMS = 0.0;
+  for (int i = 0; i < first.size(); i++)
+    RMS+=pow((first[i] - second[i]), 2);
+  RMS = sqrt(RMS)/first.size();
+  return (RMS < EPSILON);
 }
