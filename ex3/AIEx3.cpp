@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <iostream>
+#include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
-#include "Definitions.h"
+#include "Plain.h"
 
 /**
    Third exersize plan:
@@ -22,24 +22,33 @@
    A: Assume you have two clusters C1 and C2 and you want to merge them into C. Let's consider d(C,C3), when d(C1,C3) and d(C2,C3) are known. In single link, d(C,C3) = MIN{d(C1,C3),d(C2,C3)}. In average link, d(C,C3) = (|C1|*d(C1,C3) + |C2|*d(C2,C3))/(|C1|+|C2|). 
    Conclusion: If optimized, the distance function must have access to the distance matrix.
   
-   Q: Should clusters have their own matrices with distance to all the other clusters, or should they derive these distances from the points distance table?
-   A: This is time-space tradeoff. I prefer to save memory at this point.
+   Q: Should clusters have their own matrices (well, vectors) with distance to all the other clusters, or should they derive these distances from the points distance table?
+   A1: This is time-space tradeoff. I prefer to save memory at this point.
+   A2: Once you merge two clusters, you need to update the distances for all the other clusters, which creates a mess. Better keep all distances in one place.
+   Conclusion: There can (ok, should) be only one!
+
+   Q. How do you implement the algorithm with different cluster metrics?
+   A1. Pointers to functions. Given the above, the functions will have to have access to the distance matrix.
+   A2. Inheritance: Two classes inherit from the same base class, where only the distance between clusters method is implemented in the children. Plus factory to create the classes.
+   A3. If's. Ugly-ass if's everywhere.
+   Conclusion: A2 is preferred (also by kiss principle).
 
 
 
    high-level:
-   1. Main class will contain the usual: input parser and output writer, Point struct/class definition and the main function
-   2. Definitions class will hold everything that is exercise dependand - distance between points, distance between clusters, single-link, average-link, points id assigner.
-   3. Point class/struct will represent a point
-   3. Cluster class will represent a cluster
-   4. Plane class will represent the plain - an array of clusters and their distance table (matrix)
+   1. Main class will contain the usual: input parser and output writer, Point struct/class definition and the main function. Parser should not be aware of the data structures, it should return a separate struct and main should construct the plain (in this case) from that one.
+   2. I don't think there is a need for definitions class in this case, there only two funcitons that really belong there - the toString and points enumerator, which is just dumb. So, for toString alone - I'd spare it.
+   3. Point struct will represent a point - x,y,id, clusterId
+   3. Cluster class will represent a cluster - it will hold a list of points, the lowest point id, will support merging and will have it's own id.
+   4. Plane class will represent the plain - an array of clusters and their distance table (matrix). Will have a pure virtual method that calculates distances between clusters with size > 1. Will recalculate the custer IDs from their least point ID and reassign all clusterIds (which will trigger cluster to reassing point's clusterId). Plain might benefit from getting a pointer to function that calculates eucledian distance, but it's out of scope atm.
+   5. SingleLinkPLain and AverageLinkPlain that will inherit Plain and will implement the cluster distance virtual method.
 
 
    class/struct Point:
      should have id and cluster id. both initialized to the same (given) value
      holds it's x and y coordinates.
    class Cluster:
-     should have an id and a list of contained Point* objects. The id is expected to be the minimal point id of all points contained in the cluster 
+     should have an id and a list of contained Point* objects. Also, should hold the lowestPointId, which is expected to be the minimal point id of all points contained in the cluster.
      should be able to merge between clusters, i.e. to have a "copy" constructor from two existing clusters.
      need to update each point's clusterId once its id is updated
    class Utils/Definitions:
@@ -55,6 +64,13 @@
  */
 
 using namespace std;
+
+struct inputParser
+{
+  string method;
+  int boundary;
+  vector< std::pair<double, double> > points;
+};
 
 /**
  * Writes a given string to a file.
@@ -76,30 +92,28 @@ void writeResults(const char* outputPath, string outputStr)
  * 
  * @param inputPath - the path of the input file to read from.
  */
-void readAndParseInput(const char* inputPath, Plain& plain)
+inputParser readAndParseInput(const char* inputPath)
 {
   ifstream input(inputPath);
+  inputParser parser;
 
   if(input.is_open())
   {
-    string line, method;
+    string line;
     
     // get the distance calculation method
-    getline(input, method);
+    getline(input, parser.method);
 
     // get the number of clusters
     getline(input, line);
-    int clusterNum = atoi(line.c_str());
-
-    // init the plain object
-    plain.init(method, clusterNum);
+    parser.boundary = atoi(line.c_str());
 
     // parse the rest of the lines, construct points from each and add them to the plain
     while (getline(input, line))
     {
       double x,y;
       sscanf(line.c_str(), "%lf,%lf", &x, &y);
-      plain.addNewPoint(x,y);
+      parser.points.push_back(std::make_pair(x, y));
     }
   }
   else
@@ -107,15 +121,27 @@ void readAndParseInput(const char* inputPath, Plain& plain)
     cout << "Couldn't open the input file, aborting" << endl;
     throw "";
   }  
+  return parser;
 }
 
+// should be part of definitions
+string convertPlainToOutputStr(Plain* plain)
+{
+  vector<Point*> points(plain->getPoints());
+  stringstream stream;
+  for (vector<Point*>::iterator it = points.begin(); it != points.end(); it++)
+    stream << (*it)->clusterId << endl;
+  return stream.str();
+}
 
 int main()
 {
-  Plain plain;
-  readAndParseInput("input.txt", plain);
-  plain.executeHierarchicalClustering();
-  string result = Definitions::plainDivisionToString(plain);
+  inputParser parser = readAndParseInput("input.txt");
+  Plain* plain = Plain::factory(parser.method);
+  for (vector< std::pair<double,double> >::iterator it=parser.points.begin(); it != parser.points.end(); it++)
+    plain->addNewPoint((*it).first, (*it).second);
+  plain->executeHierarchicalClustering(parser.boundary);
+  string result = convertPlainToOutputStr(plain);
   writeResults("output.txt", result);
   return 1;
 }

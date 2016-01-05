@@ -10,10 +10,16 @@
 class Cluster
 {
  private:
-  int id;
+  int id, leastPointId;
   std::vector<Point*> points;
 
  public:
- Cluster(Point* point) : id(point->clusterId) {points.push_back(point);};
+  Cluster(Point* point);
   int getId() {return id;};
 };
+
+Cluster::Cluster(Point* point) : leastPointId(point->id), id(point->id)
+{
+  point->clusterId = id;
+  points.push_back(point);
+}
