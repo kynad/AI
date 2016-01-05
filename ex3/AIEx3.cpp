@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
-#include "Plain.h"
+#include "Definitions.h"
 
 /**
    Third exersize plan:
@@ -19,7 +19,8 @@
 
    main decisions:
    Q: Is there a way to optimize cluster distance calculation. E.g. for single-link which is the shortest distance between all pairs, it's MIN(MIN(Cluster, point from another cluster)), which can be broken into pieces.
-   A: Average-link is Sum(Sum(d(pi,pj)))/(|C1|*|C2|). You can hold for every p, the Sp = Sum_i(d(pi,p))/|C| for pi in C, then to obtain the distance between C1, C2, you just need to calculate Sum(Sp)/|C2| for p in C2.
+   A: Assume you have two clusters C1 and C2 and you want to merge them into C. Let's consider d(C,C3), when d(C1,C3) and d(C2,C3) are known. In single link, d(C,C3) = MIN{d(C1,C3),d(C2,C3)}. In average link, d(C,C3) = (|C1|*d(C1,C3) + |C2|*d(C2,C3))/(|C1|+|C2|). 
+   Conclusion: If optimized, the distance function must have access to the distance matrix.
   
    Q: Should clusters have their own matrices with distance to all the other clusters, or should they derive these distances from the points distance table?
    A: This is time-space tradeoff. I prefer to save memory at this point.
