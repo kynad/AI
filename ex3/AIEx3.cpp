@@ -69,7 +69,7 @@ struct inputParser
 {
   string method;
   int boundary;
-  vector< std::pair<double, double> > points;
+  vector< pair<double, double> > points;
 };
 
 /**
@@ -113,7 +113,7 @@ inputParser readAndParseInput(const char* inputPath)
     {
       double x,y;
       sscanf(line.c_str(), "%lf,%lf", &x, &y);
-      parser.points.push_back(std::make_pair(x, y));
+      parser.points.push_back(make_pair(x, y));
     }
   }
   else
@@ -130,7 +130,7 @@ string convertPlainToOutputStr(Plain* plain)
   vector<Point*> points(plain->getPoints());
   stringstream stream;
   for (vector<Point*>::iterator it = points.begin(); it != points.end(); it++)
-    stream << (*it)->clusterId << endl;
+    stream << (*it)->clusterId + 1 << endl;
   return stream.str();
 }
 
@@ -138,8 +138,9 @@ int main()
 {
   inputParser parser = readAndParseInput("input.txt");
   Plain* plain = Plain::factory(parser.method);
-  for (vector< std::pair<double,double> >::iterator it=parser.points.begin(); it != parser.points.end(); it++)
+  for (vector< pair<double,double> >::iterator it=parser.points.begin(); it != parser.points.end(); it++)
     plain->addNewPoint((*it).first, (*it).second);
+  plain->printDistances();
   plain->executeHierarchicalClustering(parser.boundary);
   string result = convertPlainToOutputStr(plain);
   writeResults("output.txt", result);

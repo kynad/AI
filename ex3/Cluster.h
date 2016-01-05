@@ -10,16 +10,39 @@
 class Cluster
 {
  private:
-  int id, leastPointId;
+  int id;
   std::vector<Point*> points;
+  void updateId();
 
  public:
-  Cluster(Point* point);
-  int getId() {return id;};
+  Cluster(Point* point, int id);
+  Cluster(Cluster* one, Cluster* two);
+  int getId() {return id;}
+  std::vector<Point*> getPoints() { return points;};
+  void decreaseId() {id--; updateId();};
 };
 
-Cluster::Cluster(Point* point) : leastPointId(point->id), id(point->id)
+void Cluster::updateId()
+{
+  for (std::vector<Point*>::iterator it = points.begin(); it != points.end(); it++)
+    (*it)->clusterId = id;
+}
+
+Cluster::Cluster(Point* point, int id) : id(id)
 {
   point->clusterId = id;
   points.push_back(point);
+}
+
+Cluster::Cluster(Cluster* one, Cluster* two)
+{
+  std::vector<Point*> onePoints = one->getPoints(); // This sucks.
+  std::vector<Point*> twoPoints = two->getPoints(); // I should pass by reference here, to avoid extra copying.
+  points.reserve(onePoints.size() + twoPoints.size());
+  points.insert(points.end(), onePoints.begin(), onePoints.end());
+  points.insert(points.end(), twoPoints.begin(), twoPoints.end());
+  int oneId, twoId = two->getId();
+  oneId = one->getId();
+  id = (oneId < twoId) ? oneId : twoId;
+  updateId();
 }
