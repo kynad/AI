@@ -20,6 +20,7 @@ class Cluster
   int getId() {return id;}
   std::vector<Point*> getPoints() { return points;};
   void decreaseId() {id--; updateId();};
+  int size() {return points.size();};
 };
 
 void Cluster::updateId()

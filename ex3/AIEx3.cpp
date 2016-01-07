@@ -100,7 +100,7 @@ inputParser readAndParseInput(const char* inputPath)
   if(input.is_open())
   {
     string line;
-    
+
     // get the distance calculation method
     getline(input, parser.method);
 

@@ -5,7 +5,7 @@
 
 class Plain
 {
-private:
+protected:
   std::vector<Point*> points;
   std::vector<Cluster*> clusters;
   double** distances;
@@ -18,10 +18,37 @@ public:
   void executeHierarchicalClustering(int boundary);
   std::vector<Point*> getPoints() { return points;};
   Cluster* mergeClusters(int firstId, int secondId);
-  double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
+  virtual double clusterDistance(Cluster* one, Cluster* two, Cluster* target) = 0;
   std::pair<int,int> findMinDistanceIndices();
   void printDistances();
 };
+
+class SingleLinkPlain : public Plain
+{
+public:
+  double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
+};
+
+class AverageLinkPlain : public Plain
+{
+public:
+  double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
+};
+
+Plain* Plain::factory(std::string method)
+{
+  char *prefix;
+  sscanf(method.c_str(), "%s", prefix);
+  std::cout << prefix << std::endl;
+  // TODO: strip instead
+  std::string word(prefix);
+  if (word == "single") 
+    return new SingleLinkPlain();
+  else if (word == "average")
+    return new AverageLinkPlain();
+  std::cout << "Method '"  << method << "' is not supported." << std::endl;
+  throw "";
+}
 
 void Plain::addNewPoint(double x, double y)
 {
@@ -76,12 +103,7 @@ double Plain::metric(Point* one, Point* two)
 {
   if (one->id == two->id)
     return 0;
-  return sqrt(pow((one->x + two->x), 2) + pow((one->y + two->y), 2));
-}
-
-Plain* Plain::factory(std::string method)
-{
-  return new Plain();
+  return sqrt(pow((one->x - two->x), 2) + pow((one->y - two->y), 2));
 }
 
 Cluster* Plain::mergeClusters(int firstId, int secondId)
@@ -167,7 +189,7 @@ void Plain::executeHierarchicalClustering(int boundary)
   }
 }
 
-double Plain::clusterDistance(Cluster* one, Cluster* two, Cluster* target)
+double SingleLinkPlain::clusterDistance(Cluster* one, Cluster* two, Cluster* target)
 {
   int firstId = one->getId();
   int secondId = two->getId();
@@ -177,4 +199,18 @@ double Plain::clusterDistance(Cluster* one, Cluster* two, Cluster* target)
   double distance1 = distances[firstId][targetId];
   double distance2 = distances[secondId][targetId];
   return (distance1 < distance2) ? distance1 : distance2;
+}
+
+double AverageLinkPlain::clusterDistance(Cluster* one, Cluster* two, Cluster* target)
+{
+  int firstId = one->getId();
+  int secondId = two->getId();
+  int firstSize = one->size();
+  int secondSize = two->size();
+  int targetId = target->getId();
+  if (firstId == targetId || secondId == targetId)
+    return 0;
+  double distance1 = distances[firstId][targetId];
+  double distance2 = distances[secondId][targetId];
+  return (distance1*firstSize + distance2*secondSize)/(firstSize + secondSize);
 }
