@@ -8,8 +8,6 @@ using namespace std;
  */
 Plain* Plain::factory(string method)
 {
-  method.erase(method.find_last_not_of(" \n\r\t")+1);
-  // TODO: strip instead
   if (method == "single link") 
     return new SingleLinkPlain();
   else if (method == "average link")
