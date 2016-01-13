@@ -14,7 +14,7 @@ protected:
 
 public:
   static Plain* factory(std::string method);
-  ~Plain();
+  virtual ~Plain();
   void addNewPoint(double x, double y);
   void executeHierarchicalClustering(int boundary);
   std::vector<Point*> getPoints() { return points;};
@@ -27,11 +27,13 @@ class SingleLinkPlain : public Plain
 {
 public:
   double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
+  virtual ~SingleLinkPlain() {};
 };
 
 class AverageLinkPlain : public Plain
 {
 public:
   double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
+  virtual ~AverageLinkPlain() {};
 };
 
