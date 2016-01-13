@@ -8,13 +8,11 @@ using namespace std;
  */
 Plain* Plain::factory(string method)
 {
-  char *prefix;
-  sscanf(method.c_str(), "%s", prefix);
+  method.erase(method.find_last_not_of(" \n\r\t")+1);
   // TODO: strip instead
-  string word(prefix);
-  if (word == "single") 
+  if (method == "single link") 
     return new SingleLinkPlain();
-  else if (word == "average")
+  else if (method == "average link")
     return new AverageLinkPlain();
   cout << "Method '"  << method << "' is not supported." << endl;
   throw "";

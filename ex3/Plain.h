@@ -26,14 +26,14 @@ public:
 class SingleLinkPlain : public Plain
 {
 public:
-  double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
+  virtual double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
   virtual ~SingleLinkPlain() {};
 };
 
 class AverageLinkPlain : public Plain
 {
 public:
-  double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
+  virtual double clusterDistance(Cluster* one, Cluster* two, Cluster* target);
   virtual ~AverageLinkPlain() {};
 };
 

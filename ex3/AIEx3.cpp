@@ -1,8 +1,7 @@
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
-#include <stdio.h>
+#include <cstring>
 #include "Plain.h"
 
 using namespace std;
@@ -12,7 +11,7 @@ using namespace std;
  */
 struct inputParser
 {
-  string method;
+  char* method;
   int boundary;
   vector< pair<double, double> > points;
 };
@@ -44,11 +43,14 @@ inputParser readAndParseInput(const char* inputPath)
 
   if(input.is_open())
   {
-    string line;
+    string line, method;
 
     // get the distance calculation method
-    getline(input, parser.method);
-
+    getline(input, method);
+    // have to trim method, due to the usual EOL crap (Ariel works on mac)
+    method.erase(method.find_last_not_of(" \n\r\t")+1);
+    parser.method = strdup(method.c_str());
+    
     // get the number of clusters
     getline(input, line);
     parser.boundary = atoi(line.c_str());
@@ -82,7 +84,8 @@ string convertPlainToOutputStr(Plain* plain)
 int main()
 {
   inputParser parser = readAndParseInput("input.txt");
-  Plain* plain = Plain::factory(parser.method);
+  string method(parser.method);
+  Plain* plain = Plain::factory(method);
   for (vector< pair<double,double> >::iterator it=parser.points.begin(); it != parser.points.end(); it++)
     plain->addNewPoint((*it).first, (*it).second);
   plain->executeHierarchicalClustering(parser.boundary);
